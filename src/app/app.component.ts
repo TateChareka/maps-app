@@ -10,13 +10,12 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
 })
 
 export class AppComponent {
-  title: string = 'Maps Grid';
+  title: string = 'BekoSoft Maps';
   latitude: number;
   longitude: number;
-  searchRadius: number;
-  address: string;
-  searchControl: FormControl;
+  searchRadius: number = 1000;//This is in metres 
   zoom: number = 18;
+  showRadius: boolean = false;
   AddressModel: any = {
     "latitude": null,
     "longitude": null,
@@ -40,20 +39,36 @@ export class AppComponent {
     private ngZone: NgZone
   ) { }
 
-  private setCurrentPosition() {
+  setCurrentPosition() {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
         this.latitude = position.coords.latitude;
         this.longitude = position.coords.longitude;
         this.zoom = 16;
+        this.AddressModel = {
+          "latitude": position.coords.latitude,
+          "longitude": position.coords.longitude
+        }
       });
     }
   }
 
-  ngOnInit() {
+  radiusHide() {
+    this.showRadius = false;
+  }
+  radiusShow() {
+    this.showRadius = true;
+    if (this.searchRadius > 0 && this.searchRadius <= 500) {
+      this.zoom = 18;
+    } else if (this.searchRadius > 500 && this.searchRadius <= 2000) {
+      this.zoom = 15;
+    }
+    else if (this.searchRadius > 2000) {
+      this.zoom = 14;
+    }
+  }
 
-    //set current position
-    this.setCurrentPosition();
+  ngOnInit() {
 
     this.mapsAPILoader.load().then(
       () => {
@@ -66,8 +81,8 @@ export class AppComponent {
             }
             this.latitude = place.geometry.location.lat();
             this.longitude = place.geometry.location.lng();
-            this.searchRadius = 1000;
-            if (this.searchRadius > 0 && this.searchRadius <= 50) {
+            this.searchRadius = 1000;//This is in metres
+            if (this.searchRadius > 0 && this.searchRadius <= 500) {
               this.zoom = 18;
             } else if (this.searchRadius > 500 && this.searchRadius <= 2000) {
               this.zoom = 15;
@@ -127,7 +142,6 @@ export class AppComponent {
                 "address": place.formatted_address
               }
             }
-            console.log(this.AddressModel);
           });
         });
       }

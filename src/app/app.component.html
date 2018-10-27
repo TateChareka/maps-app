@@ -1,26 +1,23 @@
-<!-- <div class="container">
-  <h1>Angular 2 + Google Maps Places Autocomplete</h1>
-  <div>
-    <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" class="form-control"
-      #search [formControl]="searchControl">
-  </div>
-  <agm-map [latitude]="latitude" [longitude]="longitude" [scrollwheel]="false" [zoom]="zoom">
-    <agm-marker [latitude]="latitude" [longitude]="longitude"></agm-marker>
-  </agm-map>
-</div> -->
-
-<!-- <input [hidden]="!isLoggedIn()" class="albergueInfo" type="text" autocorrect="off" autocapitalized="off" spellcheck="off"
-  placeholder="" #address [value]="addressValue" (input)="addressValue=$event.target.value" /> -->
+<h1>{{ title }}</h1>
 
 <div class="form-group">
   <input size="100" type="text" placeholder="Search for Location" autocorrect="off" autocapitalize="off" spellcheck="off"
     class="form-control" #search>
-</div>
+  &nbsp; &nbsp;
+  <button (click)="setCurrentPosition()">User Current location</button>
+  &nbsp; &nbsp;
+  <label>Radius in KM's</label>
+   &nbsp;&nbsp;
 
+  <button *ngIf="showRadius==false" (click)="radiusShow()">Show radius on Map</button>
+  <button *ngIf="showRadius==true" (click)="radiusHide()">Hide radius on Map</button>
+
+</div>
+<br />
 <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom" [disableDefaultUI]="false" [zoomControl]="false">
   <agm-marker [latitude]="AddressModel.latitude" [longitude]="AddressModel.longitude"> </agm-marker>
   <agm-circle [latitude]="AddressModel.latitude" [longitude]="AddressModel.longitude" [radius]="searchRadius"
-    [fillColor]="'blue'" [circleDraggable]="false" [editable]="false">
+    [fillColor]="'blue'" [circleDraggable]="false" [editable]="false" [visible]="showRadius">
   </agm-circle>
 
 </agm-map>
