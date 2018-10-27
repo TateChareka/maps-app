@@ -1,6 +1,6 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { } from 'googlemaps';
+import { } from '@types/googlemaps';
 import { MapsAPILoader, MouseEvent } from '@agm/core';
 
 @Component({
@@ -11,20 +11,25 @@ import { MapsAPILoader, MouseEvent } from '@agm/core';
 
 export class AppComponent {
   title: string = 'Maps Grid';
-  public latitude: number;
-  public longitude: number;
-  public address: string;
-  public searchControl: FormControl;
-  public zoom: number;
+  latitude: number;
+  longitude: number;
+  searchRadius: number;
+  address: string;
+  searchControl: FormControl;
+  zoom: number = 18;
   AddressModel: any = {
     "latitude": null,
     "longitude": null,
     "addressArray": null,
     "address": null,
+    "streetNumber": null,
+    "roadName": null,
+    "sublocality": null,
+    "locality": null,
     "city": null,
     "country": null,
     "postalCode": null,
-    "province": null
+    "province": null,
   };
 
   @ViewChild("search")
@@ -40,14 +45,12 @@ export class AppComponent {
       navigator.geolocation.getCurrentPosition((position) => {
         this.latitude = position.coords.latitude;
         this.longitude = position.coords.longitude;
-        this.zoom = 20;
+        this.zoom = 16;
       });
     }
   }
 
   ngOnInit() {
-    //create search FormControl
-    this.searchControl = new FormControl();
 
     //set current position
     this.setCurrentPosition();
@@ -64,19 +67,67 @@ export class AppComponent {
             }
             this.latitude = place.geometry.location.lat();
             this.longitude = place.geometry.location.lng();
-            this.zoom = 20;
-            this.address = "Select Point";
+            this.searchRadius = 1000;
+            if (this.searchRadius > 0 && this.searchRadius <= 50) {
+              this.zoom = 18;
+            } else if (this.searchRadius > 500 && this.searchRadius <= 2000) {
+              this.zoom = 15;
+            }
+            else if (this.searchRadius > 2000) {
+              this.zoom = 14;
+            }
 
-            this.AddressModel = {
-              "latitude": place.geometry.location.lat(),
-              "longitude": place.geometry.location.lng(),
-              "addressArray": place.address_components,
-              "address": place.formatted_address,
-              // "city": this.retriveAddressComponents('locality'),
-              // "country": this.retriveAddressComponents('country'),
-              // "postalCode": this.retriveAddressComponents('postal_code'),
-              // "province": this.retriveAddressComponents('administrative_area_level_1')
-            };
+            if (place.address_components.length == 6) {
+              this.AddressModel = {
+                "latitude": place.geometry.location.lat(),
+                "longitude": place.geometry.location.lng(),
+                "addressArray": place.address_components,
+                "address": place.formatted_address,
+                "roadName": place.address_components[0].long_name,
+                "sublocality": place.address_components[1].long_name,
+                "city": place.address_components[2].long_name,
+                "locality": place.address_components[3].long_name,
+                "province": place.address_components[4].long_name,
+                "country": place.address_components[5].long_name
+              };
+            } else if (place.address_components.length == 7) {
+              this.AddressModel = {
+                "latitude": place.geometry.location.lat(),
+                "longitude": place.geometry.location.lng(),
+                "addressArray": place.address_components,
+                "address": place.formatted_address,
+                "streetNumber": place.address_components[0].long_name,
+                "roadName": place.address_components[1].long_name,
+                "sublocality": place.address_components[2].long_name,
+                "city": place.address_components[3].long_name,
+                "locality": place.address_components[4].long_name,
+                "province": place.address_components[5].long_name,
+                "country": place.address_components[6].long_name
+              };
+            }
+            else if (place.address_components.length == 8) {
+              this.AddressModel = {
+                "latitude": place.geometry.location.lat(),
+                "longitude": place.geometry.location.lng(),
+                "addressArray": place.address_components,
+                "address": place.formatted_address,
+                "streetNumber": place.address_components[0].long_name,
+                "roadName": place.address_components[1].long_name,
+                "sublocality": place.address_components[2].long_name,
+                "city": place.address_components[3].long_name,
+                "locality": place.address_components[4].long_name,
+                "province": place.address_components[5].long_name,
+                "country": place.address_components[6].long_name,
+                "postalCode": place.address_components[7].long_name
+              };
+            } else {
+              this.AddressModel = {
+                "latitude": place.geometry.location.lat(),
+                "longitude": place.geometry.location.lng(),
+                "addressArray": place.address_components,
+                "address": place.formatted_address
+              }
+            }
             console.log(this.AddressModel);
           });
         });

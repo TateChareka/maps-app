@@ -18,17 +18,9 @@
 </div>
 
 <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="zoom" [disableDefaultUI]="false" [zoomControl]="false">
-
-  <agm-marker [latitude]="latitude" [longitude]="longitude" [label]="address" markerDraggable="false">
-
-    <!-- <agm-info-window>
-      <strong>InfoWindow content</strong>
-    </agm-info-window> -->
-
-  </agm-marker>
-
-  <agm-circle [latitude]="AddressModel.latitude" [longitude]="AddressModel.longitude" [radius]="5000" [fillColor]="'red'"
-    [circleDraggable]="false" [editable]="false">
+  <agm-marker [latitude]="AddressModel.latitude" [longitude]="AddressModel.longitude"> </agm-marker>
+  <agm-circle [latitude]="AddressModel.latitude" [longitude]="AddressModel.longitude" [radius]="searchRadius"
+    [fillColor]="'blue'" [circleDraggable]="false" [editable]="false">
   </agm-circle>
 
 </agm-map>
